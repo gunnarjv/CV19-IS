@@ -14,6 +14,7 @@ d = [1, 1, 2, 8, 5, 13, 9, 8, 6, 6, 9, 13, 23, 14, 20]
 
 first_case_date = datetime.datetime(2020, 2, 28)
 dates = [first_case_date+datetime.timedelta(days=x) for x in range(len(d)) ]
+print(dates)
 
 # Cumulative (total) case count
 c = list(itertools.accumulate(d,lambda x,y : x+y))
@@ -22,24 +23,30 @@ print(c)
 # Cumulative case count extrapolation
 # https://stackoverflow.com/questions/3433486/how-to-do-exponential-and-logarithmic-curve-fitting-in-python-i-found-only-poly
 # The methodology here was simply to get some exponential extrapolation that looks reasonable on the graph
-x = [x for x in range(6,15)]
-y = c[6:]
+
+# What days to use for extrapolation
+extrapolate_from_date = 6
+extrapolate_to_date = 14
+
+x = [x for x in range(extrapolate_from_date,extrapolate_to_date+1)]
+y = c[extrapolate_from_date:]
 
 fit = np.polyfit(x, np.log(y), 1)
 # polyfit example results:
 #    array([ 0.10502711, -0.40116352])
 #    y ≈ exp(-0.401) * exp(0.105 * x) = 0.670 * exp(0.105 * x)
 
-extrapolation = [np.exp(fit[1])*np.exp(fit[0]*x) for x  in range(51)]
-
+end_date_extrapolation = 50
+extrapolation = [np.exp(fit[1])*np.exp(fit[0]*x) for x  in range(end_date_extrapolation+1)]
 
 # Cumulative case chart w. extrapolation
 cp = go.Figure()
 cp.add_scatter(y=c)
 cp.add_scatter(y=extrapolation)
 
-cp.update_yaxes(type="log", range=[np.log10(1), np.log10(100000)])
-cp.update_xaxes(range=[0, 50])
+y_axis_upper_cutoff = 100000
+cp.update_yaxes(type="log", range=[np.log10(1), np.log10(y_axis_upper_cutoff)])
+cp.update_xaxes(range=[0, end_date_extrapolation])
 
 
 # Label particular dates on chart
@@ -55,3 +62,4 @@ cp.add_trace(go.Scatter(
 
 cp.update_layout(showlegend=False)
 cp.show()
+
