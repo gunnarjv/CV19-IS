@@ -13,6 +13,10 @@ Data is from the bar chart and then by manually keeping up with the confirmed ca
 The methodology for prediction here was simply to get some
 exponential extrapolation that looks reasonable on the graph.
 
+Main moving parts are the 'days_to_label' variable and the
+'from_day' and 'to_day' variables to decide what date range to use for extrapolation.
+Then 'end_day_extrapolation' for number of days after first case to extrapolate towards.
+
 See:
 https://stackoverflow.com/questions/3433486/how-to-do-exponential-and-logarithmic-curve-fitting-in-python-i-found-only-poly
 
