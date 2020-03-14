@@ -33,7 +33,7 @@ c = list(itertools.accumulate(d,lambda x,y : x+y))
 
 def extrapolate():
     # Extrapolate from which days?
-    from_day = 6
+    from_day = 8
     to_day = 14
     # Last day (from zero) to extrapolate value for
     end_day_extrapolation = 50
@@ -46,10 +46,11 @@ def extrapolate():
 
         extrapolation = [np.exp(fit[1])*np.exp(fit[0]*x) for x  in range(end_day_extrapolation+1)]
         return extrapolation
-
+    
     return _extrapolate()
 
 extrapolation = extrapolate()
+print(extrapolation)
 
 ''' Chart '''
 
@@ -95,8 +96,8 @@ labels = [get_label(x) for x in days_to_label_x]
 
 
 cp.add_trace(go.Scatter(
-    x=dates_to_label_x,
-    y=dates_to_label_y,
+    x=days_to_label_x,
+    y=days_to_label_y,
     mode="markers+text",
     text=labels,
     textposition="top left",
