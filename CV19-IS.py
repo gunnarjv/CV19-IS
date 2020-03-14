@@ -46,7 +46,7 @@ def extrapolate():
 
         extrapolation = [np.exp(fit[1])*np.exp(fit[0]*x) for x  in range(end_day_extrapolation+1)]
         return extrapolation
-    
+
     return _extrapolate()
 
 extrapolation = extrapolate()
@@ -64,7 +64,7 @@ cp.update_yaxes(type="log", range=[np.log10(1), np.log10(y_axis_upper)])
 cp.update_xaxes(range=[0, end_date_extrapolation])
 
 # Label particular dates on chart
-days_to_label_x = [15, 27, 37, 42, 46]
+days_to_label_x = [15, 25, 35, 45]
 
 # Rest of label is calculated
 
