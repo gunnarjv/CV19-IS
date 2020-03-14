@@ -13,6 +13,7 @@ c = list(itertools.accumulate(d,lambda x,y : x+y))
 
 # Cumulative case count extrapolation
 # https://stackoverflow.com/questions/3433486/how-to-do-exponential-and-logarithmic-curve-fitting-in-python-i-found-only-poly
+# The methodology here was simply to get some exponential extrapolation that looks reasonable on the graph 
 x = [x for x in range(6,15)]
 y = c[6:]
 
