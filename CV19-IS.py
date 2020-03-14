@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 # From bar chart and then manually keeping up with the confirmed cases number
 
 # Daily new confirmed cases
+# Starting with first confirmed case February 28th.
 d = [1, 1, 2, 8, 5, 13, 9, 8, 6, 6, 9, 13, 23, 14, 20]
 
 # Cumulative (total) case count
