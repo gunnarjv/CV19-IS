@@ -24,7 +24,7 @@ np.polyfit example results:
 first_case_date = datetime.date(2020, 2, 28)
 
 # Daily new confirmed cases (partial for March 14)
-d = [1, 1, 2, 8, 5, 13, 9, 8, 6, 6, 9, 13, 23, 14, 20]
+d = [1, 1, 2, 8, 5, 13, 9, 8, 6, 6, 9, 13, 23, 14, 20, 18]
 
 # Cumulative (total) case count
 c = list(itertools.accumulate(d,lambda x,y : x+y))
@@ -58,13 +58,12 @@ cp = go.Figure()
 cp.add_scatter(y=c, name='Staðfest smit')
 cp.add_scatter(y=extrapolation, name='Framreikningur')
 
-y_axis_upper_cutoff = 100000
-cp.update_yaxes(type="log", range=[np.log10(1), np.log10(y_axis_upper_cutoff)])
+y_axis_upper = 100000
+cp.update_yaxes(type="log", range=[np.log10(1), np.log10(y_axis_upper)])
 cp.update_xaxes(range=[0, end_date_extrapolation])
 
 # Label particular dates on chart
-# past_or_present_dates_to_label_x = [15]
-dates_to_label_x = [15, 27, 37, 42, 46]
+days_to_label_x = [15, 27, 37, 42, 46]
 
 # Rest of label is calculated
 
@@ -76,19 +75,23 @@ def get_label(days_from_zero):
     days_from_today = (first_case_date + d - today).days
 
     if(days_from_today > 0):
-        return label_form.format(days_from_today, int(extrapolation[days_from_zero]))
+        y_data_from = extrapolation
     elif(days_from_today < 0):
-        return label_form.format(days_from_today, int(c[days_from_zero]))
+        y_data_from = c
     else:
-        # If numbers for today have been added, we show that, else nothing for today
+        # If label is for today, we will return data if available,
+        # else return label with no data
         if(len(c) > days_from_zero):
-            return label_form.format(days_from_today, int(c[days_from_zero]))
-        return '(T+0)'
+            y_data_from = c
+        else:
+            return '(T+0)'
+
+    return label_form.format(days_from_today, int(y_data_from[days_from_zero]))
 
 # Let extrapolation[d] Y-pos be good enough, even for past dates
-dates_to_label_y = [extrapolation[d] for d in dates_to_label_x]
+days_to_label_y = [extrapolation[d] for d in days_to_label_x]
 
-labels = [get_label(x) for x in dates_to_label_x]
+labels = [get_label(x) for x in days_to_label_x]
 
 
 cp.add_trace(go.Scatter(
