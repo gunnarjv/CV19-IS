@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import numpy as np
 import itertools
 import plotly.graph_objects as go
