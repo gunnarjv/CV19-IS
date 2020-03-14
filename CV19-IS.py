@@ -31,12 +31,12 @@ c = list(itertools.accumulate(d,lambda x,y : x+y))
 
 ''' Extrapolation (Cumulative cases)  '''
 
+end_day_extrapolation = 50
 def extrapolate():
     # Extrapolate from which days?
     from_day = 8
     to_day = 14
     # Last day (from zero) to extrapolate value for
-    end_day_extrapolation = 50
 
     def _extrapolate():
         x = [x for x in range(from_day,to_day+1)]
@@ -87,7 +87,7 @@ def add_labels(cp):
 
         return label_form.format(days_from_today, int(y_data_from[days_from_zero]))
 
-    labels_text = [get_label_text(x) for x in days_to_label_x]
+    labels_text = [get_label_text(x) for x in days_to_label]
 
     cp.add_trace(go.Scatter(
         x=days_to_label,
@@ -103,7 +103,7 @@ add_labels(cp)
 
 y_axis_upper = 100000
 cp.update_yaxes(type="log", range=[np.log10(1), np.log10(y_axis_upper)])
-cp.update_xaxes(range=[0, end_date_extrapolation])
+cp.update_xaxes(range=[0, end_day_extrapolation])
 
 cp.update_layout(
     title="Staðfest smit CV-19 á Íslandi og framreikningur",
