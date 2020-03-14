@@ -6,37 +6,52 @@ import datetime
 import numpy as np
 import plotly.graph_objects as go
 
-# Case count from https://www.covid.is/tolulegar-upplysingar
-# From bar chart and then manually keeping up with the confirmed cases number
+'''
+Case count from https://www.covid.is/tolulegar-upplysingar
+Data is from the bar chart and then by manually keeping up with the confirmed cases number
+
+The methodology for prediction here was simply to get some
+exponential extrapolation that looks reasonable on the graph.
+
+See:
+https://stackoverflow.com/questions/3433486/how-to-do-exponential-and-logarithmic-curve-fitting-in-python-i-found-only-poly
+
+np.polyfit example results:
+    array([ 0.10502711, -0.40116352])
+    y ≈ exp(-0.401) * exp(0.105 * x) = 0.670 * exp(0.105 * x)
+'''
+
+first_case_date = datetime.date(2020, 2, 28)
 
 # Daily new confirmed cases (partial for March 14)
 d = [1, 1, 2, 8, 5, 13, 9, 8, 6, 6, 9, 13, 23, 14, 20]
 
-# Dates corresponding to cases
-first_case_date = datetime.date(2020, 2, 28)
-dates = [ first_case_date+datetime.timedelta(days=x) for x in range(len(d)) ]
-
 # Cumulative (total) case count
 c = list(itertools.accumulate(d,lambda x,y : x+y))
 
-# Cumulative case count extrapolation
-# https://stackoverflow.com/questions/3433486/how-to-do-exponential-and-logarithmic-curve-fitting-in-python-i-found-only-poly
-# The methodology here was simply to get some exponential extrapolation that looks reasonable on the graph
+''' Extrapolation (Cumulative cases)  '''
 
-# What days to use for extrapolation
-extrapolate_from_date = 6
-extrapolate_to_date = 14
+def extrapolate():
+    # Extrapolate from which days?
+    from_day = 6
+    to_day = 14
+    # Last day (from zero) to extrapolate value for
+    end_day_extrapolation = 50
 
-x = [x for x in range(extrapolate_from_date,extrapolate_to_date+1)]
-y = c[extrapolate_from_date:extrapolate_to_date+1]
+    def _extrapolate():
+        x = [x for x in range(from_day,to_day+1)]
+        y = c[from_day:to_day+1]
 
-fit = np.polyfit(x, np.log(y), 1)
-# polyfit example results:
-#    array([ 0.10502711, -0.40116352])
-#    y ≈ exp(-0.401) * exp(0.105 * x) = 0.670 * exp(0.105 * x)
+        fit = np.polyfit(x, np.log(y), 1)
 
-end_date_extrapolation = 50
-extrapolation = [np.exp(fit[1])*np.exp(fit[0]*x) for x  in range(end_date_extrapolation+1)]
+        extrapolation = [np.exp(fit[1])*np.exp(fit[0]*x) for x  in range(end_day_extrapolation+1)]
+        return extrapolation
+
+    return _extrapolate()
+
+extrapolation = extrapolate()
+
+''' Chart '''
 
 # Cumulative case chart w. extrapolation
 cp = go.Figure()
