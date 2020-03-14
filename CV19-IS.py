@@ -40,8 +40,8 @@ extrapolation = [np.exp(fit[1])*np.exp(fit[0]*x) for x  in range(end_date_extrap
 
 # Cumulative case chart w. extrapolation
 cp = go.Figure()
-cp.add_scatter(y=c)
-cp.add_scatter(y=extrapolation)
+cp.add_scatter(y=c, name='Staðfest smit')
+cp.add_scatter(y=extrapolation, name='Framreikningur')
 
 y_axis_upper_cutoff = 100000
 cp.update_yaxes(type="log", range=[np.log10(1), np.log10(y_axis_upper_cutoff)])
@@ -80,12 +80,23 @@ cp.add_trace(go.Scatter(
     x=dates_to_label_x,
     y=dates_to_label_y,
     mode="markers+text",
-    name="Markers and Text",
     text=labels,
-    textposition="top left"
+    textposition="top left",
+    showlegend=False
 ))
 
 
-cp.update_layout(showlegend=False)
+cp.update_layout(
+    title="Staðfest smit CV-19 á Íslandi og framreikningur",
+    xaxis_title="Dagar frá fyrsta staðfesta smiti",
+    yaxis_title="Fjöldi",
+    font=dict(
+        family="Courier New, monospace",
+        size=16,
+    )
+)
+
+# cp.update_layout(showlegend=False)
 cp.show()
+
 
