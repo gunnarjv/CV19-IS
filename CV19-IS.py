@@ -1,22 +1,27 @@
 #!/usr/bin/env python3
 
-import numpy as np
 import itertools
+import datetime
+
+import numpy as np
 import plotly.graph_objects as go
 
 # Case count from https://www.covid.is/tolulegar-upplysingar
 # From bar chart and then manually keeping up with the confirmed cases number
 
 # Daily new confirmed cases
-# Starting with first confirmed case February 28th.
 d = [1, 1, 2, 8, 5, 13, 9, 8, 6, 6, 9, 13, 23, 14, 20]
+
+first_case_date = datetime.datetime(2020, 2, 28)
+dates = [first_case_date+datetime.timedelta(days=x) for x in range(len(d)) ]
 
 # Cumulative (total) case count
 c = list(itertools.accumulate(d,lambda x,y : x+y))
+print(c)
 
 # Cumulative case count extrapolation
 # https://stackoverflow.com/questions/3433486/how-to-do-exponential-and-logarithmic-curve-fitting-in-python-i-found-only-poly
-# The methodology here was simply to get some exponential extrapolation that looks reasonable on the graph 
+# The methodology here was simply to get some exponential extrapolation that looks reasonable on the graph
 x = [x for x in range(6,15)]
 y = c[6:]
 
