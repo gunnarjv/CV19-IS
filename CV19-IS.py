@@ -50,7 +50,6 @@ def extrapolate():
     return _extrapolate()
 
 extrapolation = extrapolate()
-print(extrapolation)
 
 ''' Chart '''
 
@@ -59,51 +58,52 @@ cp = go.Figure()
 cp.add_scatter(y=c, name='Staðfest smit')
 cp.add_scatter(y=extrapolation, name='Framreikningur')
 
+
+def add_labels(cp):
+    # Label particular dates on chart
+    days_to_label = [15, 25, 35, 45]
+
+    # Calculate y-position of labels as extrapolation[d] (good enough)
+    days_to_label_y = [extrapolation[d] for d in days_to_label]
+
+    def get_label_text(days_from_zero):
+        label_form = '(T{0:+d}, {1:d})'
+        today = datetime.datetime.now().date()
+
+        d = datetime.timedelta(days_from_zero)
+        days_from_today = (first_case_date + d - today).days
+
+        if(days_from_today > 0):
+            y_data_from = extrapolation
+        elif(days_from_today < 0):
+            y_data_from = c
+        else:
+            # If label is for today, we will return data if available,
+            # else return label with no data
+            if(len(c) > days_from_zero):
+                y_data_from = c
+            else:
+                return '(T+0)'
+
+        return label_form.format(days_from_today, int(y_data_from[days_from_zero]))
+
+    labels_text = [get_label_text(x) for x in days_to_label_x]
+
+    cp.add_trace(go.Scatter(
+        x=days_to_label,
+        y=days_to_label_y,
+        mode="markers+text",
+        text=labels_text,
+        textposition="top left",
+        showlegend=False
+    ))
+
+add_labels(cp)
+
+
 y_axis_upper = 100000
 cp.update_yaxes(type="log", range=[np.log10(1), np.log10(y_axis_upper)])
 cp.update_xaxes(range=[0, end_date_extrapolation])
-
-# Label particular dates on chart
-days_to_label_x = [15, 25, 35, 45]
-
-# Rest of label is calculated
-
-def get_label(days_from_zero):
-    label_form = '(T{0:+d}, {1:d})'
-    today = datetime.datetime.now().date()
-
-    d = datetime.timedelta(days_from_zero)
-    days_from_today = (first_case_date + d - today).days
-
-    if(days_from_today > 0):
-        y_data_from = extrapolation
-    elif(days_from_today < 0):
-        y_data_from = c
-    else:
-        # If label is for today, we will return data if available,
-        # else return label with no data
-        if(len(c) > days_from_zero):
-            y_data_from = c
-        else:
-            return '(T+0)'
-
-    return label_form.format(days_from_today, int(y_data_from[days_from_zero]))
-
-# Let extrapolation[d] Y-pos be good enough, even for past dates
-days_to_label_y = [extrapolation[d] for d in days_to_label_x]
-
-labels = [get_label(x) for x in days_to_label_x]
-
-
-cp.add_trace(go.Scatter(
-    x=days_to_label_x,
-    y=days_to_label_y,
-    mode="markers+text",
-    text=labels,
-    textposition="top left",
-    showlegend=False
-))
-
 
 cp.update_layout(
     title="Staðfest smit CV-19 á Íslandi og framreikningur",
@@ -115,7 +115,6 @@ cp.update_layout(
     )
 )
 
-# cp.update_layout(showlegend=False)
 cp.show()
 
 
