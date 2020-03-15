@@ -26,9 +26,10 @@ np.polyfit example results:
 '''
 
 first_case_date = datetime.date(2020, 2, 28)
+days_since_first = 15 
 
-# Daily new confirmed cases (partial for March 14)
-d = [1, 1, 2, 8, 5, 13, 9, 8, 6, 6, 9, 13, 23, 14, 20, 18]
+# Daily new confirmed cases (with March 14th in full)
+d = [1, 1, 2, 8, 5, 13, 9, 8, 6, 6, 9, 13, 24, 15, 19, 22]
 
 # Cumulative (total) case count
 c = list(itertools.accumulate(d,lambda x,y : x+y))
@@ -38,15 +39,15 @@ c = list(itertools.accumulate(d,lambda x,y : x+y))
 end_day_extrapolation = 50
 def extrapolate():
     # Extrapolate from which days?
-    from_day = 8
-    to_day = 14
+    from_day = 12
+    to_day = 15
     # Last day (from zero) to extrapolate value for
 
     def _extrapolate():
         x = [x for x in range(from_day,to_day+1)]
         y = c[from_day:to_day+1]
 
-        fit = np.polyfit(x, np.log(y), 1)
+        fit = np.polyfit(x, np.log(y), 1, w=np.sqrt(y))
 
         extrapolation = [np.exp(fit[1])*np.exp(fit[0]*x) for x  in range(end_day_extrapolation+1)]
         return extrapolation
@@ -55,23 +56,27 @@ def extrapolate():
 
 extrapolation = extrapolate()
 
+# 12 here is extrapolate_from
+extrapolation_y = extrapolation[12:]
+extrapolation_x = [x for x in range(12, end_day_extrapolation)]
+
 ''' Chart '''
 
 # Cumulative case chart w. extrapolation
 cp = go.Figure()
 cp.add_scatter(y=c, name='Staðfest smit')
-cp.add_scatter(y=extrapolation, name='Framreikningur')
+cp.add_scatter(y=extrapolation_y, x=extrapolation_x, name='Framreikningur')
 
 
 def add_labels(cp):
     # Label particular dates on chart
-    days_to_label = [15, 25, 35, 45]
+    days_to_label = [25, 35, 45]
 
     # Calculate y-position of labels as extrapolation[d] (good enough)
     days_to_label_y = [extrapolation[d] for d in days_to_label]
 
     def get_label_text(days_from_zero):
-        label_form = '(T{0:+d}, {1:d})'
+        label_form = '(T{0:+d}, {1:d} greind smit)'
         today = datetime.datetime.now().date()
 
         d = datetime.timedelta(days_from_zero)
@@ -110,15 +115,16 @@ cp.update_yaxes(type="log", range=[np.log10(1), np.log10(y_axis_upper)])
 cp.update_xaxes(range=[0, end_day_extrapolation])
 
 cp.update_layout(
-    title="Staðfest smit CV-19 á Íslandi og framreikningur",
+    title="Greind smit Covid-19 á Íslandi og framreikningur",
     xaxis_title="Dagar frá fyrsta staðfesta smiti",
     yaxis_title="Fjöldi",
     font=dict(
         family="Courier New, monospace",
-        size=16,
+        size=12,
     )
 )
 
 cp.show()
+
 
 
