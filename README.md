@@ -10,3 +10,7 @@ eru fengin með því að skoða fjölda staðfestra smita af sömu síðu í lo
 ![Skjáskot](https://i.ibb.co/Mkrh2Rv/Screenshot-from-2020-03-14-17-22-50.png)
 
 Endilega fiktið eða sendið mér ábendingar um hvaðeina :)
+
+# Verkefni
+
+Stýra hvar ferillinn fyrir spálíkanið hefst á x-ás (á hvaða degi)
